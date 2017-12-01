@@ -40,3 +40,40 @@ onlyCapitalLetters([
     'JS is greater',
     'CSHARP FoReVer'
 ]);
+
+function sumOfTwoNum(params) {
+    let firstNum = Number(params[0]);
+    let secondNum = Number(params[1]);
+
+    let sum = firstNum + secondNum;
+    document.getElementById('sum').innerHTML = sum;
+}
+
+sumOfTwoNum(['50', '-25']);
+
+function threeIntegersSum(params) {
+    params = params.map(Number);   // like .Select(int.Parse)
+
+    console.log(
+        checkForSum(params[0], params[1], params[2]) ||
+        checkForSum(params[1], params[2], params[0]) ||
+        checkForSum(params[0], params[2], params[1]) ||
+        'No'
+    );
+
+
+    function checkForSum(first, second, sum) {
+        if(first + second !== sum){
+            return false;
+        }
+
+        if(first > second){
+            [first, second] = [second, first];   //swaps the two numbers
+        }
+
+        return `${first} + ${second} = ${sum}`;
+    }
+}
+
+threeIntegersSum(['8', '15', '7']);
+
