@@ -11,3 +11,4 @@ function multiply(a, b) {
 }
 
 solved(6, 10);
+
