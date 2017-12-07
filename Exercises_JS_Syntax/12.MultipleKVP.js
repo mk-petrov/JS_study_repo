@@ -13,14 +13,18 @@ function solve(args) {
         result[key].push(value);
     }
 
-    if (result[command]){
+    // if truth then join by new line else, print "None"
+    console.log(result[command] ? result[command].join('\n') : 'None');
 
-        for (let value of result[command]){
-            console.log(value);
-        }
-    } else {
-        console.log('None');
-    }
+    // Second way:
+    // if (result[command]){
+    //
+    //     for (let value of result[command]){
+    //         console.log(value);
+    //     }
+    // } else {
+    //     console.log('None');
+    // }
 }
 
 // solve([
