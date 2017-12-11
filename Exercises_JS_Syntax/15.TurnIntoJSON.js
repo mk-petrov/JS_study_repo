@@ -7,6 +7,11 @@ function solve(args) {
         let key = tokens[0];
         let value = tokens[1];
 
+        if (key === 'age' || key === 'grade'){
+            // if(['grade', 'age'].includes(key))     //.includes is like .contains
+            // if(['grade', 'age'].indexOf(key) !== -1)     //also works
+            value = Number(value);
+        }
         object[key] = value;
     }
 
