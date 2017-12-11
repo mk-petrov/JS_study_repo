@@ -9,6 +9,7 @@ function solve(args) {
 
         if (!result[key]){
             result[key] = new Array();
+            // or result[key] = value;
         }
         result[key].push(value);
     }
