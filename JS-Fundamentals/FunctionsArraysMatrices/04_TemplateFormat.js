@@ -26,4 +26,4 @@ buildXML(["Dry ice is a frozen form of which gas?",
     "Carbon Dioxide",
     "What is the brightest star in the night sky?",
     "Sirius"]);
-buildXML(['only one string']);
+buildXML(['only one string to test with']);
