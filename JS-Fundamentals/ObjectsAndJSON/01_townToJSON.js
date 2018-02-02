@@ -9,8 +9,8 @@ function townsToJson(strArr) {
 
         let town = {
             Town: townTokens[0],
-            Latitude: townTokens[1],
-            Longitude: townTokens[2]
+            Latitude: Number(townTokens[1]),
+            Longitude: Number(townTokens[2])
         }
 
         towns.push(town);
