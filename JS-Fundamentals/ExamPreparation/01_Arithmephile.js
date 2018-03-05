@@ -12,7 +12,7 @@ function solve(args) {
 
         if(currNum >= 0 && currNum <= 9){
             //currentSave = currNum;
-            let inputCopy = input.slice();
+            let inputCopy = input.slice();  // copy array by value
             let tempArray = inputCopy.splice(j, currNum);
 
             if(tempArray.length !== 0){
