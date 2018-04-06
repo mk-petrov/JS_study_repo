@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Table</title>
+</head>
+<body>
+<table>
+    <tr><th>Name</th><th>Town</th></tr>
+    <tr><td>Eve</td><td>Sofia</td></tr>
+    <tr><td>Nick</td><td>Varna</td></tr>
+    <tr><td>Didi</td><td>Ruse</td></tr>
+    <tr><td>Tedy</td><td>Varna</td></tr>
+</table>
+<br>
+<button onclick="colorize()">Colorize</button>
+<script>
+    let counter = 0;
+    function colorize() {
+        let table = document.querySelectorAll('table tr');
+
+        if(counter === 3){
+            table.forEach(e => e.style.backgroundColor = 'blue');
+        }
+        if(counter % 2 === 0){
+            for (let i = 1; i < table.length; i+= 2) {
+                table[i].style.backgroundColor = 'teal';
+            }
+            counter++;
+        } else {
+            for (let i = 0; i < table.length; i+= 2) {
+                table[i].style.backgroundColor = 'yellow';
+            }
+            counter++;
+        }
+
+
+        console.log(table);
+    }
+</script>
+
+</body>
+</html>
