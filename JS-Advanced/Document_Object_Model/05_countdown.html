@@ -7,8 +7,8 @@
 <body>
 <input type="text" id="time" style="border:3px solid blue; text-align:center; font-size:2em;" disabled="true"/>
 <script>window.onload = function() {
-    let timer = Number(prompt('Set your countdown timer in seconds'));
-    countdown(timer);
+    let timer = Number(prompt('Set your countdown timer in minutes'));
+    countdown(timer * 60);
 }
 </script>
 <script>
