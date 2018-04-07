@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Timer</title>
+</head>
+<body>
+<input type="text" id="time" style="border:3px solid blue; text-align:center; font-size:2em;" disabled="true"/>
+<script>window.onload = function() {
+    let timer = Number(prompt('Set your countdown timer in seconds'));
+    countdown(timer);
+}
+</script>
+<script>
+    function countdown(startTime) {
+        let time = startTime;
+        let timer = setInterval(tick, 1000);
+
+        function tick() {
+            time--;
+            if(time <= 0){
+                clearInterval(timer);
+            }
+            document.getElementById('time').value = `${Math.floor(time / 60)}:${('0' + time % 60).slice(-2)}`;
+        }
+    }
+</script>
+
+</body>
+</html>
