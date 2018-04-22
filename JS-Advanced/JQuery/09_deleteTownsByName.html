@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete towns</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+            integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+</head>
+<body onload="attachEvents()">
+<div>Towns</div>
+<select id="towns" size="4">
+    <option>Varna</option>
+    <option>Sofia</option>
+    <option>Pleven</option>
+    <option>Varna</option>
+</select>
+<div>
+    <input type="text" id="townName">
+    <button id="btnDelete">Delete</button>
+</div>
+<div id="result"></div>
+<script>
+    function attachEvents() {
+        let resultDiv = $('#result');
+
+        $('#btnDelete').on('click', function () {
+            let townToDelete = $('#townName').val();
+            let hasDeleted = false;
+            //JQuery can select element also by reference, so the quotes aren't needed
+            let towns = $('#towns option')
+                .filter((index, el) => $(el).text() === townToDelete) //returned el is html, but with $() can use it with jquery
+                .each(function (index, el) {
+                    hasDeleted = true;
+                    $(el).remove();
+                });
+            resultDiv.text(hasDeleted ? `${townToDelete} deleted.` : `${townToDelete} not found.`);
+        });
+
+
+
+        function deleteTown() {
+            for (let i = 0; i < towns.length; i++) {
+                let current = towns[i].val();
+                if(current === toDelete){
+                    $('option')[i + 1].remove();
+                }
+            }
+        }
+    }
+</script>
+</body>
+</html>
