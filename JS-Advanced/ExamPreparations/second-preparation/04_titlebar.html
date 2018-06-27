@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Titlebar Problem</title>
+    <link rel="stylesheet" href="./04_titlebar-style.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div id="container">
+        <!-- <header class="header">
+            <div class="header-row">
+                <a class="button">&#9776;</a>
+                <span class="title">Title Bar problem</span>
+            </div>
+            <div class="drawer">
+                <nav class="menu">
+                    <a href="href" class="menu-link">Link name</a>
+                    <a href="href" class="menu-link">Link name</a>
+                    <a href="href" class="menu-link">Link name</a>
+                    <a href="href" class="menu-link">Link name</a>
+                </nav>
+            </div>
+        </header>
+        <div id="content">
+            <article class="post">
+                <p>Text text texttext texttext texttext texttext texttext texttext texttext text text texttext texttext texttext
+                    texttext texttext texttext texttext texttext text text texttext texttext texttext texttext texttext text
+                    text texttext texttext texttext texttext texttext texttext texttext texttext texttext texttext texttext
+                    text text texttext texttext texttext texttext texttext texttext texttext texttext text text texttext
+                    texttext texttext texttext texttext texttext texttext texttext texttext texttext texttext texttext text
+                    text texttext texttext texttext texttext texttext texttext texttext texttext texttext text text texttext
+                    texttext texttext texttext texttext texttext texttext texttext texttext texttext texttext text
+                </p>
+            </article>
+        </div> -->
+    </div>
+    <script src="./04_titlebar.js"></script>
+    <script>
+        $(document).ready(function () {
+            let header = new TitleBar('Title bar problem');
+            header.addLink('/', 'Home');
+            header.addLink('about', 'About');
+            header.addLink('results', 'Results');
+            header.addLink('faq', 'FAQ');
+            header.appendTo('#container');
+
+            console.log(header.links);
+        });
+    </script>
+</body>
+
+</html>
