@@ -28,14 +28,45 @@ $(() => {
         function fillSelect(data) {
             list.empty();
             for (let post of data) {
-                $('<option>').text(post.title).val(post._id).appendTo(list);
+                $('<option>').text(post.title)
+                    .val(post._id) // make the id of the post as value of each option to know which option is selected
+                    .appendTo(list);
             }
         }
     }
 
     function viewPost() {
         //Request only selected post from database and all associated comments
+        let postId = $('#selected').find('option:selected').val();   //returns the selected option(or array if multiselection is on)
+        let req = {
+            url: baseUrl + 'articles/' + postId,
+            headers: {
+                'Authorization': 'Basic ' + btoa(username + ':' + password)
+            }
+        };
+
+        //sync promise chain
+        $.ajax(req)                  // REQUEST the Article
+            .then(requestComments)   // REQUEST the comments of this article
+            .then(displayPostAndComments)
+            .catch(handleError);
+
+        function requestComments(data) {
+            return new Promise(function (resolve, reject) {
+                $.ajax({
+                    url: baseUrl + `comments/?query={"postId":"${postId}"}`,
+                    headers: {
+                        'Authorization': 'Basic ' + btoa(username + ':' + password)
+                    }
+                }).then((response) => resolve([data, response]));
+            });
+        }
+
         //Display post body and comments
+        function displayPostAndComments([data, comments]) {
+            console.log(data);
+            console.log(comments);
+        }
     }
 
     function handleError(reason) {
