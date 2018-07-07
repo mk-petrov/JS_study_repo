@@ -10,7 +10,8 @@ $(() => {
     $('#btnView').click(viewPost);
 
     // DOM elements
-    const list = $('#selected');
+    const select = $('#selected');
+    const content = $('#content');
 
     function loadPosts() {
         //Request all post from database and display inside <select>
@@ -26,18 +27,18 @@ $(() => {
 
         //this function will be called only when btnLoad is pressed, so can be internal for loadPosts
         function fillSelect(data) {
-            list.empty();
+            select.empty();
             for (let post of data) {
                 $('<option>').text(post.title)
                     .val(post._id) // make the id of the post as value of each option to know which option is selected
-                    .appendTo(list);
+                    .appendTo(select);
             }
         }
     }
 
     function viewPost() {
         //Request only selected post from database and all associated comments
-        let postId = $('#selected').find('option:selected').val();   //returns the selected option(or array if multiselection is on)
+        let postId = select.find('option:selected').val();   //returns the selected option(or array if multiselection is on)
         let req = {
             url: baseUrl + 'articles/' + postId,
             headers: {
@@ -64,8 +65,19 @@ $(() => {
 
         //Display post body and comments
         function displayPostAndComments([data, comments]) {
-            console.log(data);
-            console.log(comments);
+            content.empty();
+            content.append($(`<h1>${data.title}</h1>`));
+            content.append($(`<p>${data.body}</p>`));
+            content.append($('<h2>Comments</h2>'));
+            let list = $('<ul>');
+            for (let comment of comments){
+                list.append($(`<li>${comment.text}</li>`));
+            }
+            if (comments.length === 0){
+                list.append($('<li>No comments yet</li>'));
+            }
+
+            content.append(list);
         }
     }
 
