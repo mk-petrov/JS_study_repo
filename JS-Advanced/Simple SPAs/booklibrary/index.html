@@ -71,11 +71,23 @@
         <div class="content">
             <div id="books">
                 <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     <tr>
-                        <th>Title</th>
-                        <th>Author</th>
-                        <th>Description</th>
-                        <th>Actions</th>
+                        <td>Book title</td>
+                        <td>Book author</td>
+                        <td>Book description</td>
+                        <td>
+                            <a href="#">[Delete]</a>
+                            <a href="#">[Edit]</a>
+                        </td>
                     </tr>
                     <tr>
                         <td>Book title</td>
@@ -86,15 +98,7 @@
                             <a href="#">[Edit]</a>
                         </td>
                     </tr>
-                    <tr>
-                        <td>Book title</td>
-                        <td>Book author</td>
-                        <td>Book description</td>
-                        <td>
-                            <a href="#">[Delete]</a>
-                            <a href="#">[Edit]</a>
-                        </td>
-                    </tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -109,7 +113,7 @@
                 <div>Author:</div>
                 <div><input type="text" name="author" required /></div>
                 <div>Description:</div>
-                <div><textarea name="description" rows="10" required></textarea></div>
+                <div><textarea name="description" rows="10" ></textarea></div>
                 <div><input type="submit" value="Create" /></div>
             </form>
         </div>

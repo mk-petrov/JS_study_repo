@@ -1,5 +1,7 @@
 $(() => {
+    //the function is called 4 times: refresh->setGreeting; login/register->setStorage->setGreeting; logout->setGreeting
     setGreeting();
+
     // in case we want to login the user every time
     //localStorage.clear();
 
@@ -12,6 +14,7 @@ $(() => {
     let loadingBox = $('#loadingBox');
     let infoBox = $('#infoBox');
     let errorBox = $('#errorBox');
+
 
     // Attach even listeners
     $('#linkHome').click(() => showView('home'));
@@ -28,6 +31,7 @@ $(() => {
 
     $('#formLogin').submit((e) => {e.preventDefault(); login()});
     $('#formRegister').submit(register);
+    $('#formCreateBook').submit(createBook);
 
     // ON request start and stop
     $(document).on({
@@ -59,7 +63,7 @@ $(() => {
             case 'home': $('#viewHome').show(); break;
             case 'login': $('#viewLogin').show(); break;
             case 'register': $('#viewRegister').show(); break;
-            case 'books': $('#viewBooks').show(); break;
+            case 'books': getBooks(); $('#viewBooks').show(); break;
             case 'create': $('#viewCreate').show(); break;
             case 'logout': $('#viewLogout').show(); break;
         }
@@ -86,15 +90,27 @@ $(() => {
         let username = localStorage.getItem('username');
         if(username !== null){
             $('#loggedInUser').text(`Welcome, ${username}!`);
+            $('#linkLogin').hide();
+            $('#linkRegister').hide();
+            $('#linkBooks').show();
+            $('#linkCreate').show();
+            $('#linkLogout').show();
         } else {
             $('#loggedInUser').text('');
+            $('#linkLogin').show();
+            $('#linkRegister').show();
+            $('#linkBooks').hide();
+            $('#linkCreate').hide();
+            $('#linkLogout').hide();
         }
     }
     
     function setStorage(data) {
         localStorage.setItem('authtoken', data._kmd.authtoken);
         localStorage.setItem('username', data.username);
+        localStorage.setItem('userId', data._id);
         $('#loggedInUser').text(`Welcome, ${data.username}!`);
+        setGreeting();
         showView('books');
     }
     
@@ -125,6 +141,16 @@ $(() => {
         let username = $("[name = 'usernameR']").val();
         let password = $("[name = 'passwdR']").val();
         let passwordRepeat = $("[name = 'passwdRepeat']").val();
+
+        if(username.length === 0){
+            showError("Username cannot be empty");
+            return;
+        }
+
+        if(password.length === 0){
+            showError("Password cannot be empty");
+            return;
+        }
 
         if(password !== passwordRepeat){
             showError("Passwords don't match!");
@@ -170,4 +196,101 @@ $(() => {
     }
 
     // Catalog
+    
+    function getBooks() {
+        let req = {
+            url: baseUrl + 'appdata/' + appKey + '/books',
+            headers: {
+                'Authorization': 'Kinvey ' + localStorage.getItem('authtoken'),
+            },
+            success: displayBooks,
+            error: handleError
+        };
+
+        $.ajax(req);
+
+        function displayBooks(data) {
+            let tbody = $('#viewBooks').find('table').find('tbody');
+            tbody.empty();
+
+            for (let book of data){
+                // Add delete and edit btns if the books are created by the same user
+                let actions = [];
+                if(book._acl.creator === localStorage.getItem('userId')){
+                    actions.push($('<button class="edit">&#9998;</button>').click(() => editBook(book._id)));
+                    actions.push($('<button class="delete">&#10006;</button>').click(() => deleteBook(book._id)));
+                }
+
+                let row = $('<tr>');
+                row.append(`<td>${book.title}</td>`);
+                row.append(`<td>${book.author}</td>`);
+                row.append(`<td>${book.description}</td>`);
+                row.append($('<td>').append(actions));
+
+                row.appendTo(tbody);
+            }
+        }
+    }
+
+    function createBook(e) {
+        e.preventDefault();
+        let createBookForm = $('#formCreateBook');
+        let title = createBookForm.find("[name = 'title']").val();
+        let author = createBookForm.find("[name = 'author']").val();
+        let description = createBookForm.find("[name = 'description']").val();
+
+        if(title.length === 0){
+            showError("Book title cannot be empty");
+            return;
+        }
+
+        if(author.length === 0){
+            showError("Book author cannot be empty");
+            return;
+        }
+
+        let req = {
+            url: baseUrl + 'appdata/' + appKey + '/books',
+            method: 'POST',
+            headers: {
+                'Authorization': 'Kinvey ' + localStorage.getItem('authtoken'),
+                'Content-Type': 'application/json'                      // Don't forget it !!!!!
+            },
+            data: JSON.stringify({
+                title: title,
+                author: author,
+                description: description
+            }),
+            success: () => { showInfo('Book created'); showView('books')},
+            error: handleError
+        };
+
+        $.ajax(req);
+    }
+
+    function editBook(id) {
+        console.log('Edit');
+    }
+
+    function deleteBook(id) {
+
+        let req = {
+            url: baseUrl + 'appdata/' + appKey + '/books/' + id,
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Kinvey ' + localStorage.getItem('authtoken'),
+                'Content-Type': 'application/json'                      // Don't forget it !!!!!
+            },
+            success: deleteSuccess,
+            error: handleError
+        };
+
+        $.ajax(req);
+
+        function deleteSuccess(data) {
+            console.log(data);
+            // showInfo(`Book "${data.title}" deleted`);
+            // showView('books');
+        }
+    }
 });
