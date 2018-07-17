@@ -28,7 +28,7 @@ $(() => {
     infoBox.click((e) => $(e.target).hide());
     errorBox.click((e) => $(e.target).hide());
 
-
+        // Submit form actions
     $('#formLogin').submit((e) => {e.preventDefault(); login()});
     $('#formRegister').submit(register);
     $('#formCreateBook').submit(createBook);
@@ -66,6 +66,7 @@ $(() => {
             case 'books': getBooks(); $('#viewBooks').show(); break;
             case 'create': $('#viewCreate').show(); break;
             case 'logout': $('#viewLogout').show(); break;
+            case 'edit': $('#viewEditBook').show(); break;
         }
     }
 
@@ -198,6 +199,8 @@ $(() => {
     // Catalog
     
     function getBooks() {
+        let tbody = $('#viewBooks').find('table').find('tbody');
+
         let req = {
             url: baseUrl + 'appdata/' + appKey + '/books',
             headers: {
@@ -210,14 +213,13 @@ $(() => {
         $.ajax(req);
 
         function displayBooks(data) {
-            let tbody = $('#viewBooks').find('table').find('tbody');
             tbody.empty();
 
             for (let book of data){
                 // Add delete and edit btns if the books are created by the same user
                 let actions = [];
                 if(book._acl.creator === localStorage.getItem('userId')){
-                    actions.push($('<button class="edit">&#9998;</button>').click(() => editBook(book._id)));
+                    actions.push($('<button class="edit">&#9998;</button>').click(() => editBook(book)));
                     actions.push($('<button class="delete">&#10006;</button>').click(() => deleteBook(book._id)));
                 }
 
@@ -261,15 +263,68 @@ $(() => {
                 author: author,
                 description: description
             }),
-            success: () => { showInfo('Book created'); showView('books')},
+            success: createSuccess,
             error: handleError
         };
 
         $.ajax(req);
+        
+        function createSuccess() {
+            $('#formCreateBook').trigger('reset');     // To reset the create form
+            showInfo('Book created');
+            showView('books');
+        }
     }
 
-    function editBook(id) {
-        console.log('Edit');
+    function editBook(book) {
+        showView('edit');
+
+        // Fill the edit form
+        let editBookForm = $('#formEditBook');
+        editBookForm.find("[name = 'title']").val(book.title);
+        editBookForm.find("[name = 'author']").val(book.author);
+        editBookForm.find("[name = 'description']").val(book.description);
+
+        editBookForm.submit(edit);
+
+        function edit(e) {
+            e.preventDefault();
+            let editedBook = {
+                title: editBookForm.find("[name = 'title']").val(),
+                author: editBookForm.find("[name = 'author']").val(),
+                description: editBookForm.find("[name = 'description']").val()
+            };
+
+            if(editedBook.title.length === 0){
+                showError("Book title cannot be empty");
+                return;
+            }
+
+            if(editedBook.author.length === 0){
+                showError("Book author cannot be empty");
+                return;
+            }
+
+            let req = {
+                url: baseUrl + 'appdata/' + appKey + '/books/' + book._id,
+                method: 'PUT',
+                headers: {
+                    'Authorization': 'Kinvey ' + localStorage.getItem('authtoken'),
+                    'Content-Type': 'application/json'
+                },
+                data: JSON.stringify(editedBook),
+                success: editSuccess,
+                error: handleError
+            };
+
+            $.ajax(req);
+
+            function editSuccess(data) {
+                showInfo('Book edited');
+                showView('books');
+            }
+        }
+
     }
 
     function deleteBook(id) {
@@ -288,9 +343,8 @@ $(() => {
         $.ajax(req);
 
         function deleteSuccess(data) {
-            console.log(data);
-            // showInfo(`Book "${data.title}" deleted`);
-            // showView('books');
+            showInfo(`Book deleted`);
+            showView('books');
         }
     }
 });
