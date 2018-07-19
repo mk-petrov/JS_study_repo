@@ -161,3 +161,7 @@ footer {
     text-align: center;
 
 }
+
+.notification {
+    display: none;
+}

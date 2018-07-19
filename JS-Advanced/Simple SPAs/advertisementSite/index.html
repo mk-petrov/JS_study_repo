@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Advertisement Site</title>
     <script src="scripts/jquery-3.1.1.min.js"></script>
     <script src="scripts/advertisement.js"></script>
@@ -10,22 +13,22 @@
 
 <body>
 <header id="menu" class="menu">
-    <a href="#" id="linkHome" class="menu-item" >Home</a>
-    <a href="#" id="linkLogin" class="menu-item">Login</a>
-    <a href="#" id="linkRegister" class="menu-item">Register</a>
-    <a href="#" id="linkListAds" class="menu-item">List Advertisements</a>
-    <a href="#" id="linkCreateAd" class="menu-item">Create Advertisement</a>
+    <a href="#" id="linkHome" class="menu-item" data-target="viewHome">Home</a>
+    <a href="#" id="linkLogin" class="menu-item" data-target="viewLogin">Login</a>
+    <a href="#" id="linkRegister" class="menu-item" data-target="viewRegister">Register</a>
+    <a href="#" id="linkListAds" class="menu-item" data-target="viewAds">List Advertisements</a>
+    <a href="#" id="linkCreateAd" class="menu-item" data-target="viewCreateAd">Create Advertisement</a>
     <a href="#" id="linkLogout" class="menu-item">Logout</a>
     <span id="loggedInUser" class="menu-item"></span>
     <div></div>
 </header>
 
 <main>
-    <section id="loadingBox" class="loadingBox">Loading ...</section>
+    <div id="loadingBox" class="loadingBox notification">Loading ...</div>
 
-    <section id="infoBox" class="infoBox">Info</section>
+    <div id="infoBox" class="infoBox notification">Info</div>
 
-    <section id="errorBox" class="errorBox">Error</section>
+    <div id="errorBox" class="errorBox notification">Error</div>
 
     <section id="viewHome" class="viewHome">
         <h1 class="title">Welcome</h1>
@@ -111,9 +114,6 @@
             <div><input type="button" id="buttonEditAd" value="Edit" /></div>
         </form>
     </section>
-    <script>
-        startApp();
-    </script>
 </main>
 <footer>Advertisement Site - Simple SPA Application</footer>
 </body>
