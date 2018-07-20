@@ -1,4 +1,7 @@
 $(() => {
+    const baseUrl = 'https://baas.kinvey.com/';
+    const appKey = 'kid_rJLePRamQ';
+    const appSecret = '904c9f39e0ac4f498cc2d4fd2c2c4e5f';
 
     // Show all links
     $('header').find('a').show();
@@ -41,7 +44,7 @@ $(() => {
                 url: baseUrl + module + '/' + appKey + '/' + url,
                 method,
                 headers: {
-                    'Authorization': makeAuth(auth)
+                    'Autorization': makeAuth(auth)
                 }
             };
 
@@ -57,7 +60,6 @@ $(() => {
             let req = makeRequest('POST', module, url, auth);
             req.data = JSON.stringify(data);
             req.headers['Content-Type'] = 'application/json';
-            console.log(req);
             return $.ajax(req);
         }
 
@@ -76,10 +78,6 @@ $(() => {
         }
     })();
 
-
-    // Made the Handshake
-    requester.get('appdata', '', 'basic');
-
     // USER
     
     function saveSession(data) {
@@ -89,17 +87,36 @@ $(() => {
         localStorage.setItem('authtoken', data._kmd.authtoken);
     }
 
-    async function login() {
+     function login() {
         let form = $('#formLogin');
         let username = form.find('input[name="username"]').val();
         let password = form.find('input[name="passwd"]').val();
 
         //console.log(username + password);
-        //let data = requester.post('user', 'login', {username, password}, 'basic');
-        //console.log(data);
-        saveSession(await requester.post('user', 'login', {username, password}, 'basic'));
-        showView('ads');
+        let req = {
+            url: baseUrl + 'user/' + appKey + '/login',
+            method: 'POST',
+            headers: {
+                'Authorization': 'Basic ' + btoa(appKey + ':' + appSecret),
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                username: username,
+                password: password
+            }),
+            success: (data) => { showView('ads'); saveSession(data)},
+            error: () => console.log('Error')
+        };
+         console.log(req);
+         $.ajax(req);
+
+        //let data = await requester.post('user', 'login', {username, password}, 'basic');
+        //saveSession(data);
+        //showView('ads');
     }
 
+    //"{"username":"ivan","password":"i1"}"
+    //{url: "https://baas.kinvey.com/user/kid_rJLePRamQ/login", method: "POST", headers: {…}, data: "{"username":"ivan","password":"i1"}"}
+    //{url: "https://baas.kinvey.com/user/kid_rJLePRamQ/login", method: "POST", headers: {…}, data: "{"username":"ivan","password":"i1"}", success: ƒ, …}
 
 });
