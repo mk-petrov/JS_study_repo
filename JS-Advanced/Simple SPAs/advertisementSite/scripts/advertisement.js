@@ -6,6 +6,8 @@ $(() => {
     // Attach event listeners
     $('#menu').find('a[data-target]').click(navigateTo);   // Attaches to all links except the logout link
     $('#buttonLoginUser').click(login);
+    $('#buttonRegisterUser').click(register);
+    $('#linkLogout').click(logout);
 
     // Navigate to specific view section
     function navigateTo(e) {
@@ -57,7 +59,6 @@ $(() => {
             let req = makeRequest('POST', module, url, auth);
             req.data = JSON.stringify(data);
             req.headers['Content-Type'] = 'application/json';
-            console.log(req);
             return $.ajax(req);
         }
 
@@ -76,9 +77,36 @@ $(() => {
         }
     })();
 
+    if(localStorage.getItem('authtoken') !== null && localStorage.getItem('username') !== null){
+        userLoggedIn();
+    } else {
+        userLoggedOut();
+    }
+
+    function userLoggedIn() {
+        let greetSpan = $('#loggedInUser');
+        greetSpan.text(`Welcome, ${localStorage.getItem('username')}!`);
+        greetSpan.show();
+        $('#linkLogin').hide();
+        $('#linkRegister').hide();
+        $('#linkLogout').show();
+        $('#linkListAds').show();
+        $('#linkCreateAd').show();
+    }
+
+    function userLoggedOut() {
+        let greetSpan = $('#loggedInUser');
+        greetSpan.text('');
+        greetSpan.hide();
+        $('#linkLogin').show();
+        $('#linkRegister').show();
+        $('#linkLogout').hide();
+        $('#linkListAds').hide();
+        $('#linkCreateAd').hide();
+    }
 
     // Made the Handshake
-    requester.get('appdata', '', 'basic');
+    //requester.get('appdata', '', 'basic');
 
     // USER
     
@@ -87,6 +115,7 @@ $(() => {
         localStorage.setItem('username', data.username);
         localStorage.setItem('id', data._id);
         localStorage.setItem('authtoken', data._kmd.authtoken);
+        userLoggedIn();
     }
 
     async function login() {
@@ -94,11 +123,40 @@ $(() => {
         let username = form.find('input[name="username"]').val();
         let password = form.find('input[name="passwd"]').val();
 
-        //console.log(username + password);
-        //let data = requester.post('user', 'login', {username, password}, 'basic');
-        //console.log(data);
-        saveSession(await requester.post('user', 'login', {username, password}, 'basic'));
-        showView('ads');
+        try {
+            let data = await requester.post('user', 'login', {username, password}, 'basic');
+            saveSession(data);
+            showView('ads');
+        } catch (err) {
+            console.log(err.responseText);
+        }
+
+    }
+
+    async function register() {
+        let form = $('#formRegister');
+        let username = form.find('input[name="username"]').val();
+        let password = form.find('input[name="passwd"]').val();
+
+        // without 'login', will register the user
+        try {
+            let data = await requester.post('user', '', {username, password}, 'basic');
+            saveSession(data);
+            showView('ads');
+        } catch (err) {
+            console.log(err.responseText);
+        }
+    }
+    
+    async function logout() {
+        try {
+            let data = await requester.post('user', '_logout', {authtoken: localStorage.getItem('authtoken')});
+            localStorage.clear();
+            userLoggedOut();
+            showView('home');
+        } catch (err) {
+            console.log(err.responseText);
+        }
     }
 
 
