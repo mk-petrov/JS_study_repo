@@ -1,5 +1,10 @@
 $(() => {
 
+    // Dom elements
+    let loadingBox = $('#loadingBox');
+    let infoBox = $('#infoBox');
+    let errorBox = $('#errorBox');
+
     // Show all links
     $('header').find('a').show();
 
@@ -8,6 +13,31 @@ $(() => {
     $('#buttonLoginUser').click(login);
     $('#buttonRegisterUser').click(register);
     $('#linkLogout').click(logout);
+
+    // Notifications
+    $('.notification').click((e) => {
+        $(e.target).hide();     //.hide()
+    });
+
+    $(document).on({
+        ajaxStart: () => loadingBox.show(),
+        ajaxStop: () => loadingBox.fadeOut()
+    });
+
+    function showInfo(message) {
+        infoBox.text(message);
+        infoBox.show();
+        setTimeout(() => infoBox.fadeOut(), 3000);
+    }
+
+    function showError(message) {
+        errorBox.text(message);
+        errorBox.show();
+    }
+
+    function handleError(reason) {
+        showError(reason.responseJSON.description);
+    }
 
     // Navigate to specific view section
     function navigateTo(e) {
@@ -77,11 +107,13 @@ $(() => {
         }
     })();
 
+    // Check for user
     if(localStorage.getItem('authtoken') !== null && localStorage.getItem('username') !== null){
         userLoggedIn();
     } else {
         userLoggedOut();
     }
+    showView('home');
 
     function userLoggedIn() {
         let greetSpan = $('#loggedInUser');
@@ -120,23 +152,23 @@ $(() => {
 
     async function login() {
         let form = $('#formLogin');
-        let username = form.find('input[name="username"]').val();
-        let password = form.find('input[name="passwd"]').val();
+        let username = form.find('input[name="username"]').val().trim();
+        let password = form.find('input[name="passwd"]').val().trim();
 
         try {
             let data = await requester.post('user', 'login', {username, password}, 'basic');
             saveSession(data);
             showView('ads');
         } catch (err) {
-            console.log(err.responseText);
+            handleError(err);
         }
 
     }
 
     async function register() {
         let form = $('#formRegister');
-        let username = form.find('input[name="username"]').val();
-        let password = form.find('input[name="passwd"]').val();
+        let username = form.find('input[name="username"]').val().trim();
+        let password = form.find('input[name="passwd"]').val().trim();
 
         // without 'login', will register the user
         try {
@@ -144,7 +176,7 @@ $(() => {
             saveSession(data);
             showView('ads');
         } catch (err) {
-            console.log(err.responseText);
+            handleError(err);
         }
     }
     
@@ -155,7 +187,7 @@ $(() => {
             userLoggedOut();
             showView('home');
         } catch (err) {
-            console.log(err.responseText);
+            handleError(err);
         }
     }
 

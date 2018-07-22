@@ -43,11 +43,14 @@ body{
 .menu-item:hover{
     color: #00bbbb;
 }
-
+.notify {
+    height: 35px;
+}
 
 main > section {
     display: none;
     padding: 20px 5px;
+
 }
 
 .title{
@@ -121,13 +124,13 @@ input[type=button]:hover{
 }
 
 #loadingBox {
-    background: #7CB3E9;
+    background: rgba(124,179,233, 0.5);               /*#7CB3E9;*/
 }
 #infoBox {
-    background: #393;
+    background: rgba(51,153,51, 0.5);                /*#393;*/
 }
 #errorBox {
-    background: #F50;
+    background: rgba(255,85,0, 1);                      /*#F50;*/
 }
 
 table{
@@ -167,4 +170,5 @@ footer {
 
 .notification {
     display: none;
+    position: absolute;
 }
