@@ -4,12 +4,19 @@ $(() => {
     let loadingBox = $('#loadingBox');
     let infoBox = $('#infoBox');
     let errorBox = $('#errorBox');
+    const adsDiv = $('#ads');
 
     // Show all links
     $('header').find('a').show();
 
     // Attach event listeners
-    $('#menu').find('a[data-target]').click(navigateTo);   // Attaches to all links except the logout link
+    $('#linkHome').click(() => showView('home'));
+    $('#linkLogin').click(() => showView('login'));
+    $('#linkRegister').click(() => showView('register'));
+    $('#linkListAds').click(() => showView('ads'));
+    $('#linkCreateAd').click(() => showView('create'));
+
+    //$('#menu').find('a[data-target]').click(navigateTo);   // Attaches to all links except the logout link
     $('#buttonLoginUser').click(login);
     $('#buttonRegisterUser').click(register);
     $('#linkLogout').click(logout);
@@ -31,7 +38,7 @@ $(() => {
     }
 
     function showError(message) {
-        errorBox.text(message);
+        errorBox.text(message + ' Click on message to remove the information box.');
         errorBox.show();
     }
 
@@ -53,7 +60,7 @@ $(() => {
             case 'home': $('#viewHome').show(); break;
             case 'login': $('#viewLogin').show(); break;
             case 'register': $('#viewRegister').show(); break;
-            case 'ads': $('#viewAds').show(); break;
+            case 'ads': $('#viewAds').show(); loadAds(); break;
             case 'create': $('#viewCreateAd').show(); break;
         }
     }
@@ -188,6 +195,27 @@ $(() => {
             showView('home');
         } catch (err) {
             handleError(err);
+        }
+    }
+
+    async function loadAds() {
+        let data = await requester.get('appdata', 'ads');
+        adsDiv.empty();
+
+        if(data.length === 0){
+            adsDiv.append('<p>No ads in database</p>');
+            return;
+        }
+
+        for (let ad of data){
+            let html = $('<div>');
+            html.append(`<p>${ad.title}</p>`);
+            html.append(`<p>${ad.description}</p>`);
+            html.append(`<p>${ad.date}</p>`);
+            html.append(`<p>${ad.publisher}</p>`);
+            html.append(`<p>${ad.imageUrl}</p>`);
+            html.append(`<p>${ad.price}</p>`);
+            adsDiv.append(html);
         }
     }
 
