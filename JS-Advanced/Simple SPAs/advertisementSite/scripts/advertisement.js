@@ -20,6 +20,7 @@ $(() => {
     $('#buttonLoginUser').click(login);
     $('#buttonRegisterUser').click(register);
     $('#linkLogout').click(logout);
+    $('#buttonCreateAd').click(createAd);
 
     // Notifications
     $('.notification').click((e) => {
@@ -209,14 +210,48 @@ $(() => {
 
         for (let ad of data){
             let html = $('<div>');
-            html.append(`<p>${ad.title}</p>`);
-            html.append(`<p>${ad.description}</p>`);
-            html.append(`<p>${ad.date}</p>`);
-            html.append(`<p>${ad.publisher}</p>`);
-            html.append(`<p>${ad.imageUrl}</p>`);
-            html.append(`<p>${ad.price}</p>`);
+            html.addClass('ad-box');
+            html.append(`<div class="ad-title">${ad.title}</div>`);
+            html.append(`<div><img src="${ad.imageUrl}"></div>`);
+            html.append(`<div>Price: ${ad.price.toFixed(2)} | By ${ad.publisher}</div>`);
+
             adsDiv.append(html);
         }
+    }
+    
+    async function createAd() {
+        // Parse user input
+        let form = $('#formCreateAd');
+        let title = form.find('input[name="title"]').val();
+        let description = form.find('input[name="description"]').val();
+        let price = form.find('input[name="price"]').val();
+        let imageUrl = form.find('input[name="image"]').val();
+        let date = (new Date()).toString('yyyy-MM-dd');
+        let publisher = localStorage.getItem('username');
+
+        // Validation of some values
+        if(title.length === 0){
+            showError('Title cannot be empty');
+            return;
+        }
+
+        if(price.length === 0){
+            showError('Price cannot be empty');
+            return;
+        }
+
+        // Create a object
+        let newAd = {
+            title, description, price, imageUrl, date, publisher
+        };
+
+        try {
+            await requester.post('appdata', 'posts', newAd);
+            showView('ads');
+        } catch (err){
+            handleError(err);
+        }
+
     }
 
 
