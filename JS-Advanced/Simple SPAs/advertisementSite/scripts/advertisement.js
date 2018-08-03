@@ -63,6 +63,7 @@ $(() => {
             case 'register': $('#viewRegister').show(); break;
             case 'ads': $('#viewAds').show(); loadAds(); break;
             case 'create': $('#viewCreateAd').show(); break;
+            case 'edit': $('#viewEditAd').show(); break;
         }
     }
 
@@ -103,6 +104,7 @@ $(() => {
         function update(module, url, data, auth) {
             let req = makeRequest('PUT', module, url, auth);
             req.data = JSON.stringify(data);
+            req.headers['Content-Type'] = 'application/json';
             return $.ajax(req);
         }
 
@@ -165,6 +167,7 @@ $(() => {
 
         try {
             let data = await requester.post('user', 'login', {username, password}, 'basic');
+            showInfo('Logged in');
             saveSession(data);
             showView('ads');
         } catch (err) {
@@ -181,6 +184,7 @@ $(() => {
         // without 'login', will register the user
         try {
             let data = await requester.post('user', '', {username, password}, 'basic');
+            showInfo('Registered');
             saveSession(data);
             showView('ads');
         } catch (err) {
@@ -192,6 +196,7 @@ $(() => {
         try {
             let data = await requester.post('user', '_logout', {authtoken: localStorage.getItem('authtoken')});
             localStorage.clear();
+            showInfo('Logged out');
             userLoggedOut();
             showView('home');
         } catch (err) {
@@ -211,11 +216,78 @@ $(() => {
         for (let ad of data){
             let html = $('<div>');
             html.addClass('ad-box');
-            html.append(`<div class="ad-title">${ad.title}</div>`);
+            let title = $(`<div class="ad-title">${ad.title}</div>`);
+
+            // Add extra functionality if the ad belongs to the logged user
+            if(ad._acl.creator === localStorage.getItem('id')){
+                // Delete btn added
+                let deleteBtn = $('<button>&#10006;</button>').click(() => deleteAd(ad._id));
+                deleteBtn.addClass('ad-control');
+                title.append(deleteBtn);
+
+                // Edit btn added
+                let editBtn = $('<button>&#9998;</button>').click(() => openEditAd(ad));
+                editBtn.addClass('ad-control');
+                title.append(editBtn);
+            }
+
+            html.append(title);
             html.append(`<div><img src="${ad.imageUrl}"></div>`);
-            html.append(`<div>Price: ${ad.price.toFixed(2)} | By ${ad.publisher}</div>`);
+            html.append(`<div>Price: ${Number(ad.price).toFixed(2)} | By ${ad.publisher}</div>`);
 
             adsDiv.append(html);
+        }
+    }
+
+    async function deleteAd(id) {
+        await requester.remove('appdata', 'ads/' + id);
+        showInfo('Add deleted');
+        showView('ads');
+    }
+
+    function openEditAd(ad){
+        let form = $('#formEditAd');
+        form.find('input[name="title"]').val(ad.title);
+        form.find('textarea[name="description"]').val(ad.description);
+        form.find('input[name="price"]').val(Number(ad.price));
+        form.find('input[name="image"]').val(ad.imageUrl);
+
+        let date = ad.date;
+        let publisher = ad.publisher;
+        let id = ad._id;
+
+        form.find('#buttonEditAd').click(() => editAd(id, date, publisher));
+        showView('edit');
+    }
+    
+    async function editAd(id, date, publisher) {
+        let form = $('#formEditAd');
+        let title = form.find('input[name="title"]').val();
+        let description = form.find('textarea[name="description"]').val();
+        let price = Number(form.find('input[name="price"]').val());
+        let imageUrl = form.find('input[name="image"]').val();
+
+        if(title.length === 0){
+            showError('Title cannot be empty');
+            return;
+        }
+
+        if(Number.isNaN(price)){
+            showError('Price cannot be empty');
+            return;
+        }
+
+        // Create a object
+        let editedAd = {
+            title, description, price, imageUrl, date, publisher
+        };
+
+        try {
+            await requester.update('appdata', 'ads/' + id, editedAd);
+            showInfo('Ad edited');
+            showView('ads');
+        } catch (err){
+            handleError(err);
         }
     }
     
@@ -223,8 +295,8 @@ $(() => {
         // Parse user input
         let form = $('#formCreateAd');
         let title = form.find('input[name="title"]').val();
-        let description = form.find('input[name="description"]').val();
-        let price = form.find('input[name="price"]').val();
+        let description = form.find('textarea[name="description"]').val();
+        let price = Number(form.find('input[name="price"]').val());
         let imageUrl = form.find('input[name="image"]').val();
         let date = (new Date()).toString('yyyy-MM-dd');
         let publisher = localStorage.getItem('username');
@@ -235,7 +307,7 @@ $(() => {
             return;
         }
 
-        if(price.length === 0){
+        if(Number.isNaN(price)){
             showError('Price cannot be empty');
             return;
         }
@@ -246,7 +318,8 @@ $(() => {
         };
 
         try {
-            await requester.post('appdata', 'posts', newAd);
+            await requester.post('appdata', 'ads', newAd);
+            showInfo('Ad created');
             showView('ads');
         } catch (err){
             handleError(err);
