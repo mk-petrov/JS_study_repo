@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Title</title>
+    <script src="../node_modules/handlebars/dist/handlebars.min.js"></script>
+</head>
+<body>
+<h1>First Demo with Handlebars</h1>
+<div id="result"></div>
+
+<script id="entry-template" type="text/x-handlebars-template">
+    <div class="entry">
+        <h1>{{title}}</h1>
+        <div class="body">
+            {{body}}
+        </div>
+    </div>
+</script>
+<script>
+    let source   = document.getElementById("entry-template").innerHTML;
+    let template = Handlebars.compile(source);
+    let context = {title: "My New Post", body: "This is my first post!"};
+    let html    = template(context);
+    document.getElementById("result").innerHTML = html;
+</script>
+</body>
+</html>
