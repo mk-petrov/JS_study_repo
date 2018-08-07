@@ -1,0 +1,7 @@
+<!-- Template that will iterate over the given context and call the global partial 'contact' -->
+
+{{#each contacts}}
+    {{> contact}}
+{{else}}
+    <p><i>(no contacts)</i></p>
+{{/each}}
